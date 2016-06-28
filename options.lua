@@ -36,36 +36,23 @@ function RNNOption:__init()
 
     -- dataset
     self:option('-dset',
-                'dataset.name', 'ptb',
-                'Dataset name: ptb | text8 | tinywmt12 | lambada')
-    self:optionChoice('-task',
-                      'dataset.task', 'word',
-                      'Task: char language model | word language model',
-                      {'char', 'word'})
-    self:option('-topn',
-                'trainer.topn', 1,
-                'Compute the accuracy based on topn in the distribution')
-    self:option('-nclusters',
-                'dataset.nclusters', 0,
-                'number of clusters for HSM: 0 => sqrt(n)')
+                'dataset.name', 'europarl2015en',
+                'Dataset name: Folder to contain train, valid and test text files')
     self:option('-threshold',
                 'dataset.threshold', 0,
                 'remove words appearing less than threshold')
-    self:option('-bin_size',
-                'dataset.bin_size', 100,
-                'Number of nodes in the frequency tree for SoftMaxTree (SMT)')
     -- model
     self:option('-name',
                 'model.name', 'srnn_sm',
                 'name of the model: core_decoder. Cores: srnn | scrnn | lstm | gru | Decoders: sm | hsm | tsm')
     self:option('-nhid',
-                'model.n_hidden', 128,
+                'model.n_hidden', 512,
                 'Number of hidden units')
     self:option('-nlayers',
                 'model.n_layers', 2,
                 'Number of recurrent layers')
     self:option('-dropout',
-                'model.dropout', 0.35,
+                'model.dropout', 0.2,
                 'Dropout value between recurrent layers')
     self:optionChoice('-winit',
                       'model.w_init', 'frand',
@@ -78,15 +65,9 @@ function RNNOption:__init()
                 'model.backprop_len', 35,
                 'Number of steps to unfold back in time')
     
-    self:optionChoice('-nonlin',
-                      'model.non_linearity', 'sigmoid',
-                      'Non linearity', {'relu', 'tanh', 'sigmoid'})
-    self:option('-cliptype',
-                'model.clip_type', 'scale',
-                'Grad clip type: scale (scale norm) | hard (clip components)')
     -- trainer
     self:option('-batch_size',
-                'trainer.batch_size', 32,
+                'trainer.batch_size', 64,
                 'Size of mini-batch')
     self:option('-trbatches',
                 'trainer.trbatches', -1,
@@ -114,16 +95,6 @@ function RNNOption:__init()
     self:option('-gradclip',
 				 'model.gradient_clip', 8,
 				 'Norm of gradient clipping (0 to disable)')
-
-    self:option('-isvalid',
-                'trainer.use_valid_set', 1,
-                'Evaluate on validation set')
-    self:option('-istest',
-                'trainer.use_test_set', 0,
-                'Evaluate on test set')
-    self:option('-noprogress',
-                'trainer.no_progress', false,
-                'Do not print progress bar (for bistro)')
     -- general
     self:option('-nepochs',
                 'trainer.n_epochs', 50,
@@ -243,7 +214,7 @@ function RNNOption:parse()
         end
     end
 
-    local mdir = params.model.name
+    local mdir = "NCE_LSTM"
         .. '_bsz=' .. params.trainer.batch_size
         .. '_nhid=' .. params.model.n_hidden
         .. '_nlayers=' .. params.model.n_layers
@@ -257,9 +228,7 @@ function RNNOption:parse()
         mdir = mdir .. '_proc=cpu'
     end
     local basedir = './output/'
-        .. params.dataset.name
-        .. '_' .. params.dataset.task
-        .. '_rnn'
+     
     if params.trainer.save == true then
         params.trainer.save_dir = paths.concat(basedir, mdir)
     else

@@ -1,8 +1,6 @@
 
 -- This file trains and tests the RNN from a batch loader.
 require('nn')
-require('nnx')
-require('nngraph')
 require('options')
 require 'utils.misc'
 require 'cudnn'
@@ -19,7 +17,6 @@ torch.manualSeed(1990)
 
 require 'cutorch'
 require 'cunn'
-require 'cunnx'
 require 'rnn'
 cutorch.setDevice(g_params.cuda_device)
 cutorch.manualSeed(1990)
